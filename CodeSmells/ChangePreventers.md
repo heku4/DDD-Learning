@@ -1,5 +1,7 @@
 ### Change Preventers (Divergent Change, Shotgun Surgery, Parallel Inheritance Hierarchies)
 
+[how-to-solve-parallel-inheritance-hierarchies-when-we-try-to-reuse-code-through](https://stackoverflow.com/questions/71242936/how-to-solve-parallel-inheritance-hierarchies-when-we-try-to-reuse-code-through)
+
 - #### Divergent Change
 
 Divergent Change is when adding a simple feature makes the developer change many unrelated methods inside a class.
@@ -35,29 +37,43 @@ The validation process is same in the both methods of the CommunicationFailureVa
 **How to fix:**
 
 ```csharp
-public class Device(){};
+public class Device;
 {
     //...
 }
 
-public class MonitoringUnit(): Device
+public class MonitoringUnit: Device
 {
     //...
 }
 
-public class Controller(): Device
+public class Controller: Device
 {
     //...
 }
 
-public CommunicationFailureValidator
+// extract class
+public class CommunicationDeviceValidator
+{
+    private bool ValidateDeviceAsync(
+            Device device,
+            DateTime dateOfImportStart,
+            DateTime dateOfImportEnd)
+    {
+        // validate
+        return isValid;
+    }
+}
+
+public class CommunicationFailureValidator
 {
     public async Task<bool> ValidateMuAsync(
             MonitoringUnit mu,
             DateTime dateOfImportStart,
             DateTime dateOfImportEnd)
     {
-        var isMuValid = ValidateDeviceAsync(mu, dateOfImportStart, dateOfImportEnd);
+        var validator = new CommunicationDeviceValidator();
+        var isMuValid = validator.ValidateDeviceAsync(mu, dateOfImportStart, dateOfImportEnd);
         // ValidateMuAsync unique logic 
         return isMuValid;
     }
@@ -68,19 +84,12 @@ public CommunicationFailureValidator
             DateTime dateOfImportStart,
             DateTime dateOfImportEnd)
     {
-        var isCtrlValid = ValidateDeviceAsync(ctrl, dateOfImportStart, dateOfImportEnd);
+        var validator = new CommunicationDeviceValidator();
+        var isCtrlValid = validator.ValidateDeviceAsync(ctrl, dateOfImportStart, dateOfImportEnd);
         // ValidateCtrlAsync unique logic 
         return isCtrlValid;
     }
-
-    private bool ValidateDeviceAsync(
-            Device device,
-            DateTime dateOfImportStart,
-            DateTime dateOfImportEnd)
-    {
-        // validate
-        return isValid;
-    }
+    
 }
 ```
 
@@ -100,13 +109,87 @@ Shotgun Surgery refers to when a single change is made to multiple classes simul
 
 - #### Parallel Inheritance Hierarchies
 
+Whenever you create a subclass for a class, you find yourself needing to create a subclass for another class.
+
 **For example:**
 
 ```csharp
+
+public abstract class Sportsman
+{
+    public string Name { get; set; }
+
+    public abstract string ShowGoal();
+}
+
+public class Runner : Sportsman
+{
+    public override string ShowGoal()
+    {
+        return new RunnerGoal().Get();
+    }
+}
+
+public abstract class Goal
+{
+    public abstract string Get();
+}
+
+
+public class RunnerGoal : Goal
+{
+    public override string Get()
+    {
+        return "Run 1 km";
+    }
+}
 ```
 
 **How to fix:**
 
 
 ```csharp
+
+public interface IGoal
+{
+    string Visit(Sportsman sportsman);
+}
+
+public class FootballerGoal : IGoal
+{
+    public string Visit(Sportsman sportsman)
+    {
+        return "Score 1 goal";
+    }
+}
+
+public class Footballer : Sportsman
+{
+    public string ShowGoal(IGoal goal) 
+    {
+        return goal.Visit(this);
+    }
+}
+
+new Footballer().GetGoal(new FootballerGoal())
+```
+
+**OR** Collapse a hierarchy:
+Notice: It can break SRP
+
+```csharp
+
+public class Footballer : Sportsman
+{
+    public override string ShowGoal()
+    {
+        return new FootballerGoal().Get();
+    }
+    
+    public string GetGoal()
+    {
+        return "Score 1 goal";
+    }
+}
+
 ```
