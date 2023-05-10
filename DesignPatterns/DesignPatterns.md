@@ -7,7 +7,7 @@ Builder
 Singleton
 Prototype
 Adapter
-Bridge
+Bridge 
 Composite
 Decorator
 Facade
