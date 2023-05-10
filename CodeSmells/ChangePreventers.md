@@ -99,12 +99,172 @@ Shotgun Surgery refers to when a single change is made to multiple classes simul
 **For example:**
 
 ```csharp
+
+public class PgDeviceOperations
+{
+    public DBConnection Connect(string connectionString)
+    {
+        // connect
+    } 
+
+} 
+
+public class PgLocationOperations
+{
+    public DBConnection Connect(string connectionString)
+    {
+        // connect
+    } 
+}
+
+```
+
+Connection logic changed (add **using** or **logging** )
+
+```csharp
+
+public class PgDeviceOperations
+{
+    public DBConnection Connect(string connectionString)
+    {
+        // connect
+        using ...
+
+        _logger.Log();
+    } 
+
+} 
+
+public class PgLocationOperations
+{
+    public DBConnection Connect(string connectionString)
+    {
+        // connect
+        using ...
+
+        _logger.Log();
+    }
+}
+
 ```
 
 **How to fix:**
 
+Change DB or connection logic
 
 ```csharp
+
+public class DbConnectionCreator()
+{
+    public DBConnection Connect(string connectionString)
+    {
+        // connect
+        using ...
+
+        _logger.Log();
+    } 
+
+} 
+
+public class PgDeviceOperations
+{
+    private DbConnectionCreator _connectionCreator;
+
+    public PgDeviceOperations(DbConnectionCreator connectionCreator)
+    {
+        _connectionCreator = connectionCreator;
+    }
+
+
+    public DBConnection Connect(string connectionString)
+    {
+        return _connectionCreator.Connect();
+    } 
+
+} 
+
+public class PgLocationOperations
+{
+    private DbConnectionCreator _connectionCreator;
+
+    public PgLocationOperations(DbConnectionCreator connectionCreator)
+    {
+        _connectionCreator = connectionCreator;
+    }
+
+    public DBConnection Connect(string connectionString)
+    {
+        return _connectionCreator.Connect();
+    } 
+}
+
+```
+
+
+**OR** merge into one class :
+
+```csharp
+
+public class PgDeviceReadOperations
+{
+    public DBConnection Connect(string connectionString)
+    {
+        // connect
+        using ...
+
+        _logger.Log();
+    } 
+
+} 
+
+public class PgDeviceWriteOperations
+{
+    public DBConnection Connect(string connectionString)
+    {
+        // connect
+        using ...
+
+        _logger.Log();
+    }
+}
+
+public class PgDeviceReadOperations
+{
+    public DBConnection Connect(string connectionString)
+    {
+        // connect
+        using ...
+
+        _logger.Log();
+    }
+}
+
+```
+
+**How to fix:**
+
+```csharp
+
+public class PgDeviceOperations
+{
+    public DBConnection Connect(string connectionString)
+    {
+        // connect
+        using ...
+
+        _logger.Log();
+    }
+
+    public Device CreateDevice()
+    {
+        // ...
+    }
+
+    public Device GetDevice()
+    {
+        // ...
+    }
+} 
 ```
 
 - #### Parallel Inheritance Hierarchies
@@ -174,8 +334,7 @@ public class Footballer : Sportsman
 new Footballer().GetGoal(new FootballerGoal())
 ```
 
-**OR** Collapse a hierarchy:
-Notice: It can break SRP
+**OR** Collapse a hierarchy (It can break SRP) :
 
 ```csharp
 
