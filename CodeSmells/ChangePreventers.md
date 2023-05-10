@@ -1,4 +1,5 @@
 ### Change Preventers (Divergent Change, Shotgun Surgery, Parallel Inheritance Hierarchies)
+
 - #### Divergent Change
 
 Divergent Change is when adding a simple feature makes the developer change many unrelated methods inside a class.
@@ -28,6 +29,7 @@ public CommunicationFailureValidator
     }
 }
 ```
+
 The validation process is same in the both methods of the CommunicationFailureValidator, but for logging and another secondary functions we separate this process on two methods.
 
 **How to fix:**

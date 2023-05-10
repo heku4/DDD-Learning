@@ -1,8 +1,6 @@
-
-
-Example: If you're scrolling, throttle will slowly call your function while you scroll (every X milliseconds). Debounce will wait until after you're done scrolling to call your function.
-
 ### Bloaters (Long Method, Large Class, Primitive Obsession, Long Parameter List, Data Clumps)
+
+[Refactoring-with-splitting-bloaters](https://ducmanhphan.github.io/2020-01-11-Refactoring-with-splitting-bloaters/)
 
 - #### Long Methods
 It is recommended that any method which is longer than 10 lines of code is a good candidate for refactoring.
