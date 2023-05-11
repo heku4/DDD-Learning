@@ -1,5 +1,8 @@
 ### Dispensables (Comments, Duplicate Code, Lazy Class, Data Class, Dead Code, Speculative Generality)
 
+[code-smells.com/dispensables](https://code-smells.com/dispensables)
+[code-smells-dispensable](https://bytelanguage.com/2018/05/19/code-smells-dispensable/)
+
 - #### Comments
 If you feel that the code requires comments to understand, then it is better to refactor  it such a way that it eliminates the need of comments.
 
