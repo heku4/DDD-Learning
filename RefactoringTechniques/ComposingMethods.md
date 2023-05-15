@@ -6,7 +6,8 @@ Transofrming a code fragment to a method which name explains the purpose.
 **Before:**
 
 ```csharp
-void printOwing(double amount) 
+
+void PrintOwing(double amount) 
 {
     PrintBanner();
 
@@ -19,13 +20,14 @@ void printOwing(double amount)
 **After:**
 
 ```csharp
-void printOwing(double amount)
+
+void PrintOwing(double amount)
 {
     PrintBanner();
     PrintDetails(amount);
 }
 
-void printDetails (double amount) 
+void PrintDetails (double amount) 
 {
     Console.WriteLine("name:" + _name);
     Console.WriteLine("amount" + amount);
@@ -38,6 +40,7 @@ Move method's body to a calling code and remove the method.
 **Before:**
 
 ```csharp
+
 int GetRating() 
 {
     return (MoreThanFiveLateDeliveries()) ? 2 : 1;
@@ -51,6 +54,7 @@ bool MoreThanFiveLateDeliveries() {
 **After:**
 
 ```csharp
+
 int GetRating() 
 {
     return (_numberOfLateDeliveries > 5) ? 2 : 1;
@@ -64,6 +68,7 @@ Expressions can become very complex and hard to read.
 **Before:**
 
 ```csharp
+
 return order.Quantity * order.ItemPrice -
       Math.Max(0, order.Quantity - 500) * order.ItemPrice * 0.05 +
       Math.Min(order.Quantity * order.ItemPrice * 0.1, 100);
@@ -72,6 +77,7 @@ return order.Quantity * order.ItemPrice -
 **After:**
 
 ```csharp
+
 const basePrice = order.Quantity * order.ItemPrice;
 const quantityDiscount = Math.Max(0, order.Quantity - 500) * order.ItemPrice * 0.05;
 const shipping = Math.Min(basePrice * 0.1, 100);
@@ -86,6 +92,7 @@ In most of cases an Inline Temp uses with Replace Temp with Query.
 **Before:**
 
 ```csharp
+
 var basePrice = order.GetBasePrice();
 return (basePrice > 1000)
 ```
@@ -93,6 +100,7 @@ return (basePrice > 1000)
 **After:**
 
 ```csharp
+
 return (order.GetBasePrice() > 1000)
 ```
 
@@ -104,6 +112,7 @@ Local variables often bloat methods also they make using of `Extract Method` dif
 **Before:**
 
 ```csharp
+
 double GetPrice() {
     int basePrice = _quantity * _itemPrice;
     double discountFactor;
@@ -123,6 +132,7 @@ double GetPrice() {
 **After:**
 
 ```csharp
+
 double GetPrice() 
 {
     return BasePrice() * DiscountFactor();
@@ -151,6 +161,7 @@ Every temp variable must be used for separated methods.
 **Before:**
 
 ```csharp
+
 double GetDistanceTravelled (int time) 
 {
     var result;
@@ -178,6 +189,7 @@ double GetDistanceTravelled (int time)
 The result variable is same but acc has changed
 
 ```csharp
+
 double GetDistanceTravelled (int time) 
 {
     var result;
@@ -206,6 +218,7 @@ Improves code readability and safety.
 **Before:**
 
 ```csharp
+
 int Discount (int inputVal, int quantity, int yearToDate) 
 {
     if (inputVal > 50) inputVal -= 2;
@@ -219,6 +232,7 @@ int Discount (int inputVal, int quantity, int yearToDate)
 **After:**
 
 ```csharp
+
 int Discount (int inputVal, int quantity, int yearToDate) 
 {
     int result = inputVal;
@@ -237,6 +251,7 @@ If a big banch of local variables don't give you a chance to extract method than
 **Before:**
 
 ```csharp
+
 public class Account
 {
     private int _ratio;
@@ -321,6 +336,7 @@ If I find a clearer way to do something, I replace the complicated way with the 
 **Before:**
 
 ```csharp
+
 string FoundPerson(String[] people){
     for (int i = 0; i < people.length; i++) {
         if (people[i].equals ("Don"))
@@ -344,6 +360,7 @@ string FoundPerson(String[] people){
 **After:**
 
 ```csharp
+
 string FoundPerson(String[] people)
 {
     var candidates = new List<string>(){"Don", "John", "Kent"};
