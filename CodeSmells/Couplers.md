@@ -98,6 +98,94 @@ This is an indication that the classes should be merged, that some functionality
 **For example:**
 
 ```csharp
+```
+
+**How to fix:**
+
+```csharp
+```
+**For example:**
+
+
+- #### Message Chains
+Message Chains occur when a class (class A), in order to get some data from class D, must access class B and use it to access class C, and use class C to access class D (Law of Demeter).
+
+**For example:**
+
+```csharp
+
+public class Customer
+{
+    private readonly Address _address;
+
+    public Address GetAddress()
+    {
+        return _address;
+    }
+}
+
+public class Address
+{
+    private readonly Country _country
+
+    public Country GetCountry()
+    {
+        return _country;
+    }
+}
+
+if(customer.GetAddress().GetCountry().IsInEurope())
+{
+    // ...
+}
+```
+
+**How to fix:**
+Extract method IsInEurope to Customer class. And move method IsInEurope down the chain.
+
+```csharp
+public class Customer
+{
+    private readonly Address _address;
+
+    public Address GetAddress()
+    {
+        return _address;
+    }
+
+    public bool IsInEurope()
+    {
+        _address.IsInEurope();
+    }
+}
+
+public class Address
+{
+    private readonly Country _country
+
+    public Country GetCountry()
+    {
+        return _country;
+    }
+
+    public bool IsInEurope()
+    {
+        _country.IsInEurope();
+    }
+}
+
+if(customer.IsInEurope())
+{
+    // ...
+}
+```
+
+- #### Middle Man
+A Middle Man is a class that in responsible, principally, for delegation.
+
+**For example:**
+
+```csharp
 
 public class Employee
 {
@@ -143,29 +231,4 @@ public class Department
 
 var employee = new Employee();
 var employeesManager = employee.WorkDepartment.Manager;
-```
-
-- #### Message Chains
-Message Chains occur when a class (class A), in order to get some data from class D, must access class B and use it to access class C, and use class C to access class D (Law of Demeter).
-
-**For example:**
-
-```csharp
-```
-
-**How to fix:**
-
-```csharp
-```
-
-- #### Middle Man
-A Middle Man is a class that in responsible, principally, for delegation.
-**For example:**
-
-```csharp
-```
-
-**How to fix:**
-
-```csharp
 ```
