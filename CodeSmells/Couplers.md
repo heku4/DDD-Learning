@@ -99,12 +99,50 @@ This is an indication that the classes should be merged, that some functionality
 
 ```csharp
 
+public class Employee
+{
+    private Department WorkDepartment {get; private set;}
+
+    public Employee Manager 
+    {
+        get {return WorkDepartment.Manager;}
+    }
+
+    public string ChargeCode
+    {
+        get {return WorkDepartment.ChargeCode;}
+    }
+}
+
+public class Department
+{
+    public string ChargeCode {get; private set;}
+    public Employee Manager {get; private set;}
+}
+
+var employee = new Employee();
+var employeesManager = employee.Manager;
 
 ```
 
 **How to fix:**
 
 ```csharp
+
+public class Employee
+{
+    private Department WorkDepartment {get; private set;}
+
+}
+
+public class Department
+{
+    public string ChargeCode {get; private set;}
+    public Employee Manager {get; private set;}
+}
+
+var employee = new Employee();
+var employeesManager = employee.WorkDepartment.Manager;
 ```
 
 - #### Message Chains
