@@ -32,11 +32,13 @@ void PrintDetails (double amount)
     Console.WriteLine("name:" + _name);
     Console.WriteLine("amount" + amount);
 }
+
 ```
 
 
 - #### Inline Method
 Move method's body to a calling code and remove the method.
+
 **Before:**
 
 ```csharp
@@ -49,6 +51,7 @@ int GetRating()
 bool MoreThanFiveLateDeliveries() {
  return _numberOfLateDeliveries > 5;
 }
+
 ```
 
 **After:**
@@ -59,6 +62,7 @@ int GetRating()
 {
     return (_numberOfLateDeliveries > 5) ? 2 : 1;
 }
+
 ```
 
 
@@ -72,6 +76,7 @@ Expressions can become very complex and hard to read.
 return order.Quantity * order.ItemPrice -
       Math.Max(0, order.Quantity - 500) * order.ItemPrice * 0.05 +
       Math.Min(order.Quantity * order.ItemPrice * 0.1, 100);
+
 ```
 
 **After:**
@@ -83,6 +88,7 @@ const quantityDiscount = Math.Max(0, order.Quantity - 500) * order.ItemPrice * 0
 const shipping = Math.Min(basePrice * 0.1, 100);
 
 return basePrice - quantityDiscount + shipping;
+
 ```
 
 
@@ -102,6 +108,7 @@ return (basePrice > 1000)
 ```csharp
 
 return (order.GetBasePrice() > 1000)
+
 ```
 
 
@@ -113,7 +120,8 @@ Local variables often bloat methods also they make using of `Extract Method` dif
 
 ```csharp
 
-double GetPrice() {
+double GetPrice() 
+{
     int basePrice = _quantity * _itemPrice;
     double discountFactor;
     if (basePrice > 1000)
@@ -127,6 +135,7 @@ double GetPrice() {
 
     return basePrice * discountFactor;
 }
+
 ```
 
 **After:**
@@ -152,6 +161,7 @@ double BasePrice()
 {
     return _quantity * _itemPrice
 }
+
 ```
 
 
@@ -209,6 +219,7 @@ double GetDistanceTravelled (int time)
 
     return result;
 }
+
 ```
 
 
@@ -227,6 +238,7 @@ int Discount (int inputVal, int quantity, int yearToDate)
 
     return inputVal;
 }
+
 ```
 
 **After:**
@@ -242,6 +254,7 @@ int Discount (int inputVal, int quantity, int yearToDate)
 
     return result;
 }
+
 ```
 
 
@@ -355,6 +368,7 @@ string FoundPerson(String[] people){
 
     return "";
 }
+
 ```
 
 **After:**
@@ -374,4 +388,5 @@ string FoundPerson(String[] people)
     
     return "";
 }
+
 ```
