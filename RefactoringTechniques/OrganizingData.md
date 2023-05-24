@@ -529,32 +529,164 @@ public class IntRange
 
 
 - #### Replace Data Value with Object
+На начальных этапах разработки простые данные могут быть использованые в виде простых элементов. Например, телефон - строка. Позднее выяснится, что телефон может иметь код зоны или особое форматирование. В таких случаях необходимо преобразовать данные в объект.
 
 **Before**
 
 ```csharp
+public class Order
+{
+  // ...
+  private string customer;
 
+  public string Customer
+  {
+    get { return customer; }
+    set { customer = value; }
+  }
+
+  public Order(string customer)
+  {
+    this.Customer = customer;
+  }
+}
+//…
+// Client code, which uses Order class.
+private static int NumberOfOrdersFor(List<Order> orders, string customer)
+{
+    int result = 0;
+
+    if (orders != null)
+    {
+        foreach (Order order in orders)
+        {
+            if (string.Equals(order.Customer, customer))
+            {
+                result++;
+            }
+        }
+    }
+
+    return result;
+}
 ```
 
 **After**
 
 ```csharp
+public class Order
+{
+    // 2. change the type of the customer field and change the related methods and properties 
+    private Customer customer;
 
+    public string CustomerName
+    {
+        get { return customer.Name; }
+        set { customer.Name = value; }
+    }
+
+    public Order(string customerName)
+    {
+        this.customer = new Customer(customerName);
+    }
+}
+
+// 1. create a Customer class and move the other customer data and behaviors to this class
+public class Customer
+{
+    public string Name
+    {
+        get;
+        set;
+    }
+
+    public Customer(string name)
+    {
+        this.Name = name;
+    }
+}
+
+// Client code, which uses Order class.
+private static int NumberOfOrdersFor(List<Order> orders, string customer)
+{
+    int result = 0;
+
+    if (orders != null)
+    {
+        foreach (Order order in orders)
+        {
+            // 3. use updated properties
+            if (string.Equals(order.CustomerName, customer))
+            {
+                result++;
+            }
+        }
+    }
+
+  return result;
+}
 ```
 
 
 - #### Replace Array with Object
+Tckb ceotcndetn массив, некоторые элементы которого могут означать разные сущности.
 
 **Before**
 
 ```csharp
+public class Tournament
+{
+    string[] row = new string[2];
 
+    public Tournament()
+    {
+        row[0] = "Liverpool";
+        row[1] = "15";
+    }
+    public void DisplayScore()
+    {
+        string name = row[0];
+        int score = Convert.ToInt32(row[1]);
+        // ...
+    }
+}
 ```
 
 **After**
 
 ```csharp
+public class Tournament
+{
+    // 2. Use the Perfomance class instead of array
+    Performance row = new Performance();
 
+    public Tournament()
+    {
+        row.CommandName = "Liverpool";
+        row.Score = 15;
+    }
+    public void DisplayScore()
+    {
+        string name = row.CommandName;
+        int score = row.Score;
+        // ...
+    }
+}
+
+// 1. Create class perfomance
+public class Performance
+{
+    public string CommandName
+    {
+        get;
+        set;
+    }
+    public int Score
+    {
+        get;
+        set;
+    }
+}
 ```
 
 
