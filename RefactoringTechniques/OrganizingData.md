@@ -461,17 +461,70 @@ public class Interval: IObservable<Interval>
 
 
 - #### Self Encapsulate Field
+Если при доступе к полю родительского класса необходимо заменить обращение к переменной вычислением значения в подклассе, тогда можно использовать эту технику.
+Самоинкапсуляция заключается в реализации доступа к полям через свойства, в том числе, в методах самого класса.
 
 **Before**
 
 ```csharp
+public class IntRange
+{
+    private int _low, _high;
 
+    public IntRange(int low, int high)
+    {
+        _low = low;
+        _high = high;
+    }
+
+    public bool Includes(int arg)
+    {
+        return arg >= _low && arg <= _high;
+    }
+
+    public void Scale(int factor)
+    {
+        _high = _high * factor;
+    }
+}
 ```
 
 **After**
 
 ```csharp
+public class IntRange
+{
+    // 1. reate properties that encapsulate our fields 
+    private int Low
+    {
+        get;
+        set;
+    }
+    private int High
+    {
+        get;
+        set;
+    }
 
+    public IntRange(int low, int high)
+    {
+        // if setter logic is simple we can use it in constructor
+        this.Low = low;
+        this.High = high;
+    }
+
+    public bool Includes(int arg)
+    {
+        // 2. replace all references to fields with references to the corresponding properties
+        return arg >= Low && arg <= High;
+    }
+
+    public void Scale(int factor)
+    {
+        // 2.
+        High = High * factor;
+    }
+}
 ```
 
 
