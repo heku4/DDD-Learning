@@ -691,32 +691,186 @@ public class Performance
 
 
 - #### Change Unidirectional Association to Bidirectional
+Метод поможет решить проблему, когда есть два класса, каждый из которых должен использовать функции другого, но ссылка между ними есть только в одном направлении.
 
 **Before**
 
 ```csharp
+public class Order
+{
+  // ...
+  private Customer customer;
 
+  public Customer Customer
+  {
+    get { return customer; }
+    set { customer = value; }
+  }
+}
+
+public class Customer
+{
+  // ...
+}
 ```
 
 **After**
+Чтобы выбрать какой из классов будет отвечать за управление связью:
+- Если оба объекта представляют собой объекты ссылок, и связь имеет тип «один-ко-многим», то управляющим будет объект, содержащий одну ссылку. (То есть если у одного клиента несколько заказов, связью управляет заказ.)
+- Если один объект является компонентом другого (т. е. связь имеет тип «целое-часть»), управлять связью должен составной объект.
+- Если оба объекта представляют собой объекты ссылок, и связь имеет тип «многие-ко-многим», то в качестве управляющего можно произвольно выбрать класс заказа или класс клиента.
 
 ```csharp
+public class Order
+{
+  // ...
+    private Customer customer;
 
+    public Customer Customer
+    {
+        get { return customer; }
+        set {
+            // first direction
+            // Remove order from old customer.
+            if (customer != null)
+            {
+                customer.Orders.Remove(this);
+            }
+
+            customer = value;
+
+            // Add order to new customer.
+            if (customer != null)
+            {
+                customer.Orders.Add(this);
+            }
+        }
+    }
+}
+
+public class Customer
+{
+    // 1. any customer can have multiple orders
+    private HashSet<Order> orders = new HashSet<Order>();
+
+    // Should be used in Order class only.
+    public HashSet<Order> Orders
+    {
+        get { return orders; }
+    }
+
+    public void AddOrder(Order order)
+    {
+        // second direction
+        order.Customer = this;
+    }
+}
 ```
 
 
 - #### Change Bidirectional Association to Unidirectional
-
+Двунаправленные связи удобны, но создают помехи в виде дополнительной сложности поддержки двусторонних ссылок и обеспечения корректности создания и удаления объектов. Сначала неободимо решить какой класс будет управляющим ("dominant").
 **Before**
 
 ```csharp
+public class Order
+{
+  // ...
+  private Customer customer;
 
+  public Customer Customer
+  {
+    get {
+      return customer;
+    }
+    set {
+      // Remove order from old customer.
+      if (customer != null)
+      {
+        customer.Orders.Remove(this);
+      }
+      customer = value;
+      // Add order to new customer.
+      if (customer != null)
+      {
+        customer.Orders.Add(this);
+      }
+    }
+  }
+
+  public double GetDiscountedPrice()
+  {
+    return GetGrossPrice() * (1 - this.Customer.GetDiscount());
+  }
+}
+
+public class Customer
+{
+  // ...
+  private HashSet<Order> orders = new HashSet<Order>();
+
+  // Should be used in Order class only.
+  public HashSet<Order> Orders
+  {
+    get {
+      return orders;
+    }
+  }
+
+  public void AddOrder(Order order)
+  {
+    order.Customer = this;
+  }
+
+  public double GetPriceFor(Order order)
+  {
+     Assert.IsTrue(orders.Contains(order));
+     return order.GetDiscountedPrice();
+  }
+}
 ```
 
 **After**
+Заказы должны появляться, только в том случае, если покупатель уже создан. Это позволяет отказаться от двусторонней связи между классами и избавиться от связи заказа к покупателю.
 
 ```csharp
+public class Order
+{
+  // ...
+    public Customer Customer
+    {
+        get {
+        foreach (Customer customer in Customer.GetInstances())
+        {
+            if (customer.ContainsOrder(this))
+            return customer;
+        }
+        return null;
+        }
+    }
 
+    public double GetDiscountedPrice()
+    {
+        return GetGrossPrice() * (1 - this.Customer.GetDiscount());
+    }
+}
+
+public class Customer
+{
+    // ...
+    private HashSet<Order> orders = new HashSet<Order>();
+
+    public void AddOrder(Order order)
+    {
+        orders.Add(order);
+    }
+
+    public double GetPriceFor(Order order)
+    {
+        Assert.IsTrue(orders.Contains(order));
+        return order.GetDiscountedPrice();
+    }
+}
 ```
 
 
