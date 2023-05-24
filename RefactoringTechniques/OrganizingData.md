@@ -241,17 +241,222 @@ Customer john = new Customer("John Smith", new DateTime(1985, 1, 1));
 
 
 - #### Duplicate Observed Data
-
+На примере GUI становится ясно, что код, обрабатывающий интерфейс пользователя, отделен от кода, обрабатывающего бизнес-логику. Если бизнес-логика встроена в интерфейс пользователя, необходимо разделить поведение на части (в основном с помощью декомпозиции и перемещения методов). Но данные нельзя перемещать, их надо скопировать и обеспечить механизм синхронизации.
 **Before**
-
+![duplicateObservedData](duplicateObservedData.png)
 ```csharp
+public partial class IntervalWindow : Form
+{
+    public IntervalWindow()
+    {
+        InitializeComponent();
+    }
 
+    private void CalculateLength()
+    {
+        int start = int.Parse(tbStart.Text);
+        int end = int.Parse(tbEnd.Text);
+        int length = end - start;
+        tbLength.Text = length.ToString();
+    }
+    private void CalculateEnd()
+    {
+        int start = int.Parse(tbStart.Text);
+        int length = int.Parse(tbLength.Text);
+        int end = start + length;
+        tbEnd.Text = end.ToString();
+    }
+
+    private void OnTextBoxLeave(object sender, EventArgs e)
+    {
+        TextBox tb = sender as TextBox;
+        
+        if (tb != null)
+        {
+            int tmp;
+            if (!int.TryParse(tb.Text, out tmp))
+            {
+                tb.Text = "0";
+            }
+            
+            if (tb == tbStart)
+            {
+                CalculateLength();
+            }
+            else if (tb == tbEnd)
+            {
+                CalculateLength();
+            }  
+            else if (tb == tbLength)
+            {
+                CalculateEnd();
+            }
+        }
+    }
+}
 ```
-
+Необходимо выделение всех перерасчётов длины и конечного значения в отдельный класс предметной области. 
 **After**
 
 ```csharp
+// 3.1 mplement the Observer pattern. IObserver<Interval>
+public partial class IntervalWindow : Form, IObserver<Interval>
+{
+    // 2. Create reference to Interval class
+    private Interval subject;
 
+    // set value if it changed in the observable class
+    private string Start
+    {
+        get{ return subject.Start; }
+        set{ subject.Start = value; }
+    }
+    private string End
+    {
+        get{ return subject.End; }
+        set{ subject.End = value; }
+    }
+    private string Length
+    {
+        get{ return subject.Length; }
+        set{ subject.Length = value; }
+    }
+
+    // 5.1 In constructor create interval instance and subscribe on
+    public IntervalWindow()
+    {
+        InitializeComponent();
+
+        subject = new Interval();
+        subject.Subscribe(this);
+        OnNext(subject);
+    }
+
+    // 4.1 Interface implementation
+    public void OnNext(Interval interval)
+    {
+        tbStart.Text = interval.Start;
+        tbEnd.Text = interval.End;
+        tbLength.Text = interval.Length;
+    }
+
+    // No implementation needed: Method is not called by the Interval class.
+    public void OnError(Exception e)
+    {
+        // No implementation.
+    }
+
+    // No implementation needed: Method is not called by the Interval class.
+    public void OnCompleted()
+    {
+        // No implementation.
+    }
+
+    private void OnTextBoxLeave(object sender, EventArgs e)
+    {
+        // same logic as before
+        TextBox tb = sender as TextBox;
+        
+        if (tb != null)
+        {
+            int tmp;
+            if (!int.TryParse(tb.Text, out tmp))
+            {
+                tb.Text = "0";
+            }
+            
+            if (tb == tbStart)
+            {
+                this.Start = tb.Text;
+                subject.CalculateLength();
+            }
+            else if (tb == tbEnd)
+            {
+                this.End = tb.Text;
+                subject.CalculateLength();
+            }  
+            else if (tb == tbLength)
+            {
+                this.Length = tb.Text;
+                subject.CalculateEnd();
+            }
+        }
+    }
+}
+
+// 1. Create separated domain class
+// 3.1 mplement the Observer pattern. IObservable<Interval>
+public class Interval: IObservable<Interval>
+{
+    // 4.3 observers (subscribers) storing
+    private List<IObserver<Interval>> observers;
+    private string  _start = "0",
+                    _end = "0",
+                    _length = "0";
+
+    public string Start
+    {
+        get{ return _start; }
+        // 6.2 when private field is changed this value is sent to subscribers
+        set{ OnValueChanged(ref _start, value); }
+    }
+    public string End
+    {
+        get{ return _end; }
+        set{ OnValueChanged(ref _end, value); }
+    }
+    public string Length
+    {
+        get{ return _length; }
+        set{ OnValueChanged(ref _length, value); }
+    }
+
+    public Interval()
+    {
+        // 4.4 
+        observers = new List<IObserver<Interval>>();
+    }
+
+    private void OnValueChanged(ref string oldValue, string newValue)
+    {
+        if (!string.Equals(oldValue, newValue, StringComparison.Ordinal))
+        {
+        oldValue = newValue;
+        foreach (var observer in observers)
+            observer.OnNext(this);
+        }
+    }
+
+    // 4.2 Interface implementation
+    public IDisposable Subscribe(IObserver<Interval> observer)
+    {
+        if (!observers.Contains(observer))
+        {
+            observers.Add(observer);
+            observer.OnNext(this);
+        }
+
+        // For disposable subscribers
+        return null;
+    }
+
+    // 6.1 now these methods calculate something and store it in private fields
+    public void CalculateLength()
+    {
+        int start = int.Parse(this.Start);
+        int end = int.Parse(this.End);
+        int length = end - start;
+        this.Length = length.ToString();
+    }
+
+    public void CalculateEnd()
+    {
+        int start = int.Parse(this.Start);
+        int length = int.Parse(this.Length);
+        int end = start + length;
+        this.End = end.ToString();
+    }
+}
 ```
 
 
