@@ -139,10 +139,9 @@ private static int NumberOfOrdersFor(List<Order> orders, string customer)
 }
 ```
 
-
 - #### Change Reference to Value
-Для обеспечения неизменяемости объекта, он не должен иметь публичных сеттеров или других метожов меняющих его состояние. Присвоение значений полям объекта может быть только в конструкторе.
 
+Для обеспечения неизменяемости объекта, он не должен иметь публичных сеттеров или других метожов меняющих его состояние. Присвоение значений полям объекта может быть только в конструкторе.
 **Before**
 
 ```csharp
@@ -295,7 +294,8 @@ public partial class IntervalWindow : Form
     }
 }
 ```
-Необходимо выделение всех перерасчётов длины и конечного значения в отдельный класс предметной области. 
+
+Необходимо выделение всех перерасчётов длины и конечного значения в отдельный класс предметной области.
 **After**
 
 ```csharp
@@ -459,11 +459,10 @@ public class Interval: IObservable<Interval>
 }
 ```
 
-
 - #### Self Encapsulate Field
+
 Если при доступе к полю родительского класса необходимо заменить обращение к переменной вычислением значения в подклассе, тогда можно использовать эту технику.
 Самоинкапсуляция заключается в реализации доступа к полям через свойства, в том числе, в методах самого класса.
-
 **Before**
 
 ```csharp
@@ -527,10 +526,9 @@ public class IntRange
 }
 ```
 
-
 - #### Replace Data Value with Object
-На начальных этапах разработки простые данные могут быть использованые в виде простых элементов. Например, телефон - строка. Позднее выяснится, что телефон может иметь код зоны или особое форматирование. В таких случаях необходимо преобразовать данные в объект.
 
+На начальных этапах разработки простые данные могут быть использованые в виде простых элементов. Например, телефон - строка. Позднее выяснится, что телефон может иметь код зоны или особое форматирование. В таких случаях необходимо преобразовать данные в объект.
 **Before**
 
 ```csharp
@@ -627,10 +625,9 @@ private static int NumberOfOrdersFor(List<Order> orders, string customer)
 }
 ```
 
-
 - #### Replace Array with Object
-Tckb ceotcndetn массив, некоторые элементы которого могут означать разные сущности.
 
+Tckb ceotcndetn массив, некоторые элементы которого могут означать разные сущности.
 **Before**
 
 ```csharp
@@ -689,8 +686,8 @@ public class Performance
 }
 ```
 
-
 - #### Change Unidirectional Association to Bidirectional
+
 Метод поможет решить проблему, когда есть два класса, каждый из которых должен использовать функции другого, но ссылка между ними есть только в одном направлении.
 
 **Before**
@@ -716,6 +713,7 @@ public class Customer
 
 **After**
 Чтобы выбрать какой из классов будет отвечать за управление связью:
+
 - Если оба объекта представляют собой объекты ссылок, и связь имеет тип «один-ко-многим», то управляющим будет объект, содержащий одну ссылку. (То есть если у одного клиента несколько заказов, связью управляет заказ.)
 - Если один объект является компонентом другого (т. е. связь имеет тип «целое-часть»), управлять связью должен составной объект.
 - Если оба объекта представляют собой объекты ссылок, и связь имеет тип «многие-ко-многим», то в качестве управляющего можно произвольно выбрать класс заказа или класс клиента.
@@ -767,8 +765,8 @@ public class Customer
 }
 ```
 
-
 - #### Change Bidirectional Association to Unidirectional
+
 Двунаправленные связи удобны, но создают помехи в виде дополнительной сложности поддержки двусторонних ссылок и обеспечения корректности создания и удаления объектов. Сначала неободимо решить какой класс будет управляющим ("dominant").
 **Before**
 
@@ -873,107 +871,571 @@ public class Customer
 }
 ```
 
-
 - #### Encapsulate Field
-
+Инкапсуляция - основа ООП. Инкапсуляция поля делает свойства объекта связанными только с поведением объекта и не позволяет сторонним классам изменять состояние объекта.
 **Before**
 
 ```csharp
-
+class Person 
+{
+  public string name;
+}
 ```
 
 **After**
 
 ```csharp
+class Person 
+{
+  private string _name;
 
+  public string Name
+  {
+    get { return _name; }
+    set { _name = value; }
+  }
+}
 ```
-
 
 - #### Encapsulate Collection
-
+Метод получения не должен возвращать сам объект коллекции, потому что
+это позволило бы клиентам изменять содержимое коллекции без ведома владеющего ею класса. Не должно быть метода, присваивающего коллекции значение. Вместо этого должны быть операции для добавления и удаления элементов.
 **Before**
 
 ```csharp
+public class Course
+{
+  public bool IsAdvanced
+  {
+    get;
+    set;
+  }
 
+  public Course(string name, bool isAdvanced = false)
+  {
+    // ...
+  }
+}
+
+public class Person
+{
+  private List<Course> _courses;
+
+  public List<Course> Courses
+  {
+    get
+    {
+      return _courses;
+    }
+    set
+    {
+      _courses = value;
+    }
+  }
+}
+
+// Client code
 ```
 
 **After**
 
 ```csharp
+public class Course
+{
+  public bool IsAdvanced
+  {
+    get;
+    set;
+  }
 
+  public Course(string name, bool isAdvanced = false)
+  {
+    // ...
+  }
+}
+
+public class Person
+{
+  private List<Course> courses = new List<Course>();
+
+    // 1. return readonly collection
+    public ReadOnlyCollection<Course> Courses
+    {
+        get
+        {
+            return new ReadOnlyCollection<Course>(courses);
+        }
+    }
+
+    // 2. specific part of collection must be returned from base class
+    public int NumberOfAdvancedCourses
+    {
+        get
+        {
+            int count = 0;
+            foreach (Course c in courses)
+            {
+                if (c.IsAdvanced)
+                count++;
+            }
+
+            return count;
+        }
+    }
+
+    public int NumberOfCourses
+    {
+        get
+        {
+            return courses.Count;
+        }
+    }
+
+    // 3.1 Add specific methods to control content in the collection 
+    public void InitializeCourses(List<Course> newCourses)
+    {
+        Assert.IsTrue(courses.Count == 0);
+        courses.AddRange(newCourses);
+    }
+
+    // 3.2
+    public void AddCourse(Course course)
+    {
+        courses.Add(course);
+    }
+
+    // 3.3
+    public void RemoveCourse(Course course)
+    {
+        courses.Remove(course);
+    }
+}
+
+// Client code
 ```
-
 
 - #### Replace Magic Number with Symbolic Constant
 
+Используется для числовых значений имеющих смысл. Позволяет сделать код более очевидным.
 **Before**
 
 ```csharp
-
+double PotentialEnergy(double mass, double height) 
+{
+  return mass * height * 9.81;
+}
 ```
 
 **After**
 
 ```csharp
+const double GRAVITATIONAL_CONSTANT = 9.81;
 
+double PotentialEnergy(double mass, double height) 
+{
+  return mass * height * GRAVITATIONAL_CONSTANT;
+}
 ```
-
 
 - #### Replace Type Code with Class
 
+Если заменить число классом, компилятор сможет проверять тип класса. Вероятность ошибок снижается, удобство использования кода и безопасность повышается
 **Before**
 
 ```csharp
+public class Person
+{
+    public const int O = 0,
+        A = 1,
+        B = 2,
+        AB = 3;
 
+    private int bloodGroupCode;
+
+    public int BloodGroupCode
+    {
+        get{ return bloodGroupCode; }
+        set{ bloodGroupCode = value; }
+    }
+
+    public Person(int code)
+    {
+        this.bloodGroupCode = code;
+    }
+}
+
+
+// client code.
+Person parent = new Person(Person.B);
+// or
+Person parent = new Person(3);
 ```
 
 **After**
 
 ```csharp
+public class Person
+{
+    // 5. Change field type to the new Class name
+    private BloodGroup bloodGroup;
 
+    public BloodGroup BloodGroup
+    {
+        get{ return bloodGroup; }
+        set{ bloodGroup = value; }
+    }
+
+    public Person(BloodGroup bloodGroup)
+    {
+        this.bloodGroup = bloodGroup;
+    }
+}
+
+
+// 1. Create a new class 
+public class BloodGroup
+{
+    // 2.1 move the blood type field from the Person class
+    private int_ code;
+    // 2.2 move the blood getter and the constructor from the Person class 
+    public int Code
+    {
+        get{ return _code; }
+    }
+    
+    // 4. Change constructor visibility modifier to private
+    private BloodGroup(int code)
+    {
+        _code = code;
+    }
+
+    // 3. Create static getters
+    public static BloodGroup O
+    {
+        get{ return new BloodGroup(0); }
+    }
+    public static BloodGroup A
+    {
+        get{ return new BloodGroup(1); }
+    }
+    public static BloodGroup B
+    {
+        get{ return new BloodGroup(2); }
+    }
+    public static BloodGroup AB
+    {
+        get{ return new BloodGroup(3); }
+    }
+}
+
+Person parent = new Person(BloodGroup.O);
 ```
-
 
 - #### Replace Type Code with Subclasses
 
+Если код типа влияет на поведение, то вариантное поведение лучше всего организовать с помощью полиморфизма. Код типа должен быть заменен иерархией наследования, содержащей полиморфное поведение. В такой иерархии наследования имеются подклассы для каждого кода типа
 **Before**
 
 ```csharp
+public class Employee
+{
+    public const int ENGINEER = 0,
+        SALESMAN = 1,
+        MANAGER = 2;
 
+    public int type;
+
+    public int MonthlySalary { get; set; }
+    public int Commission { get; set; }
+    public int Bonus { get; set; }
+
+    public Employee(int type)
+    {
+        this.type = type;
+    }
+
+    public int PayAmount()
+    {
+        switch (type)
+        {
+            case ENGINEER:
+                return MonthlySalary;
+            case SALESMAN:
+                return MonthlySalary + Commission;
+            case MANAGER:
+                return MonthlySalary + Bonus;
+            default:
+                throw new Exception("Incorrect Employee Code");
+        }
+    }
+}
+
+var employee = new Employee(Employee.MANAGER);
 ```
 
 **After**
 
 ```csharp
+public abstract class Employee
+{
+    // ...
+    public const int ENGINEER = 0,
+        SALESMAN = 1,
+        MANAGER = 2;
 
+    // 1. Type now is abstract -> each subtype can override it
+    public abstract int Type { get; }
+    public int MonthlySalary { get; set; }
+
+
+    // 2. Replace the constructor by factory method
+    public static Employee Create(int type)
+    {
+        switch (type)
+        {
+            case ENGINEER:
+                return new Engineer();
+            case SALESMAN:
+                return new Salesman();
+            case MANAGER:
+                return new Manager();
+            default:
+                throw new Exception("Incorrect Employee Code");
+        }
+    }
+
+    // 4. Add possibility for override this method by adding 'virtual' modifier 
+    public virtual int PayAmount()
+    {
+        return MonthlySalary;
+    }
+}
+
+// 3. Create Engineer class and add an override method of the parent class Type property 
+public class Engineer : Employee
+{
+    public override int Type => ENGINEER;
+}
+
+// 4. Add all subclasses and then change the main class constructor
+public class Salesman : Employee
+{
+    public override int Type => SALESMAN;
+/*
+    public int Commission { get; set; }
+
+    public override int PayAmount()
+    {
+        return MonthlySalary + Commission;
+    }
+*/
+}
+
+public class Manager : Employee
+{
+    public override int Type => MANAGER;
+/*
+    public int Bonus { get; set; }
+
+    public override int PayAmount()
+    {
+        return MonthlySalary + Bonus;
+    }
+*/
+}
 ```
-
 
 - #### Replace Type Code with State/Strategy
 
+Этот метод аналогичен предыдщуему, но позволяет работать с объектами, у которых в течение жизни может изменится тип. Здесь применяется паттерн "Состояние/Стратегия"
 **Before**
 
 ```csharp
+public class Employee
+{
+    // ...
+    public const int ENGINEER = 0,
+        SALESMAN = 1,
+        MANAGER = 2;
 
+    public int type;
+
+    public int MonthlySalary { get; set; }
+    public int Commission { get; set; }
+    public int Bonus { get; set; }
+
+    public Employee(int type)
+    {
+        this.type = type;
+    }
+
+    public int PayAmount()
+    {
+        switch (type)
+        {
+            case ENGINEER:
+                return MonthlySalary;
+            case SALESMAN:
+                return MonthlySalary + Commission;
+            case MANAGER:
+                return MonthlySalary + Bonus;
+            default:
+                throw new Exception("Incorrect Employee Code");
+        }
+    }
+}
 ```
 
 **After**
 
 ```csharp
+public class Employee
+{
+    // 4.1 Create EmployeeType field
+    private EmployeeType type;
 
+    // 4.2 Create EmployeeCode field
+    // 4.3 Call the EmployeeType.Create method in setter to update the state of Employee
+    public int EmployeeCode
+    {
+        get => type.EmployeeCode;
+        set => type = EmployeeType.Create(value);
+    }
+
+    public int MonthlySalary { get; set; }
+    public int Commission { get; set; }
+    public int Bonus { get; set; }
+
+    public Employee(int employeeCode)
+    {
+        type = EmployeeType.Create(employeeCode);
+    }
+
+    public int PayAmount()
+    {
+        return type.PayAmount(this);
+    }
+}
+
+
+// 1. Create abstract class EmployeeType int property
+public abstract class EmployeeType
+{
+    public const int ENGINEER = 0,
+        SALESMAN = 1,
+        MANAGER = 2;
+
+    public abstract int EmployeeCode { get; }
+
+    // 3. Create Factory Method with switch statement
+    public static EmployeeType Create(int code)
+    {
+        switch (code)
+        {
+            case ENGINEER:
+                return new Engineer();
+            case SALESMAN:
+                return new Salesman();
+            case MANAGER:
+                return new Manager();
+            default:
+                throw new Exception("Incorrect Employee Code");
+        }
+    }
+
+    // 4. Move PayAmount method 
+    public abstract int PayAmount(Employee employee);
+}
+
+
+// 2. create all implementations of EmployeeType class
+public class Engineer : EmployeeType
+{
+    public override int EmployeeCode => ENGINEER;
+
+    // 5. Override PayAmount in all implementatios
+    public override int PayAmount(Employee employee)
+    {
+        return employee.MonthlySalary;
+    }
+}
+
+public class Salesman : EmployeeType
+{
+    public override int EmployeeCode => SALESMAN;
+
+    public override int PayAmount(Employee employee)
+    {
+        return employee.MonthlySalary + employee.Commission;
+    }
+}
+
+public class Manager : EmployeeType
+{
+    public override int EmployeeCode => MANAGER;
+
+    public override int PayAmount(Employee employee)
+    {
+        return employee.MonthlySalary + employee.Bonus;
+    }
+}
 ```
-
 
 - #### Replace Subclass with Fields
 
 **Before**
+Есть подклассы, которые различаются только методами, возвращающими данные константы. Применение такого типа рефакторинга - это замена методов полями в родительском классе и удаление подкласов.
 
 ```csharp
+public abstract class Person
+{
+    public abstract bool IsMale { get; }
+    public abstract char Code { get; }
+}
 
+public class Male : Person
+{
+    public override bool IsMale => true;
+    public override char Code => 'M';
+}
+
+public class Female : Person
+{
+    public override bool IsMale => false;
+
+    public override char Code => 'F';
+}
 ```
 
 **After**
 
 ```csharp
+public class Person
+{
+    private bool isMale;
+    private char code;
 
+    // 3. Add getters for each field
+    public bool IsMale => isMale;
+
+    public char Code => code;
+
+    // 2. Protected constructor
+    protected Person(bool isMale, char code)
+    {
+        this.isMale = isMale;
+        this.code = code;
+    }
+
+    // 1. Create factory methods to substitute constructors from child classes
+    public static Person CreateMale()
+    {
+        return new Person(true, 'M');
+    }
+
+    public static Person CreateFemale()
+    {
+        return new Person(false, 'F');
+    }
+}
 ```
