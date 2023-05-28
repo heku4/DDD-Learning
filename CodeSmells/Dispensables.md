@@ -3,7 +3,7 @@
 [code-smells.com/dispensables](https://code-smells.com/dispensables)
 [code-smells-dispensable](https://bytelanguage.com/2018/05/19/code-smells-dispensable/)
 
-- #### Comments
+- ### Comments
 If you feel that the code requires comments to understand, then it is better to refactor  it such a way that it eliminates the need of comments.
 
 You could start with refactoring techniques like Rename Method, Rename Variable, along Extract Variable and Extract Method. Quite often using asserts (introduce assertions) can also aid in increasing the readability of the code.
@@ -31,7 +31,7 @@ public class HelloWorld
 Delete unnecessary comments
 
 
-- #### Duplicate Code
+- ### Duplicate Code
 A Duplicate Code smell represents code in multiple places that is the same or very similar. 
 **For example:**
 
@@ -45,14 +45,14 @@ openLocation = async (locationNode) => {
 Extract Method, Extract superclass and Extract class to fix this issue
 
 
-- #### Lazy Class
+- ### Lazy Class
 There could exist classes in your code which has become obsolete or the functionalities are near-useless, you could employee techniques like Inline Class to remove it.
 
 **How to fix:**
 Class might be unnecessary, and it’s functionality could be made a part of another class.
 
 
-- #### Data Class
+- ### Data Class
 A Data Class smell occurs when a class does not implement enough functionality itself to justify it being a class.
 
 **For example:**
@@ -110,7 +110,7 @@ var distance = point1.GetDistance(new Coordinates(6, 7, 8))
 ```
 
 
-- #### Dead Code
+- ### Dead Code
 A Dead Code smell occurs when code is not used, be it a variable, method, class, or parameter.
 
 
@@ -118,7 +118,7 @@ A Dead Code smell occurs when code is not used, be it a variable, method, class,
 The dead code should be deleted
 
 
-- #### Speculative Generality
+- ### Speculative Generality
 Speculative Generality is where code is written with so much caution for possible future changes, that the code becomes unnecessarily complex and harder to read.
 
 

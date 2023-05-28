@@ -1,6 +1,6 @@
 ## Organizing Data
 
-- #### Change Value to Reference
+- ### Change Value to Reference
 Эта техника помогает решить проблему существования одинаковых экзепляров класса, которые на самом деле представляют один объект
 **Before**
 
@@ -139,7 +139,7 @@ private static int NumberOfOrdersFor(List<Order> orders, string customer)
 }
 ```
 
-- #### Change Reference to Value
+- ### Change Reference to Value
 
 Для обеспечения неизменяемости объекта, он не должен иметь публичных сеттеров или других метожов меняющих его состояние. Присвоение значений полям объекта может быть только в конструкторе.
 **Before**
@@ -239,7 +239,7 @@ Customer john = new Customer("John Smith", new DateTime(1985, 1, 1));
 ```
 
 
-- #### Duplicate Observed Data
+- ### Duplicate Observed Data
 На примере GUI становится ясно, что код, обрабатывающий интерфейс пользователя, отделен от кода, обрабатывающего бизнес-логику. Если бизнес-логика встроена в интерфейс пользователя, необходимо разделить поведение на части (в основном с помощью декомпозиции и перемещения методов). Но данные нельзя перемещать, их надо скопировать и обеспечить механизм синхронизации.
 **Before**
 ![duplicateObservedData](duplicateObservedData.png)
@@ -459,7 +459,7 @@ public class Interval: IObservable<Interval>
 }
 ```
 
-- #### Self Encapsulate Field
+- ### Self Encapsulate Field
 
 Если при доступе к полю родительского класса необходимо заменить обращение к переменной вычислением значения в подклассе, тогда можно использовать эту технику.
 Самоинкапсуляция заключается в реализации доступа к полям через свойства, в том числе, в методах самого класса.
@@ -526,7 +526,7 @@ public class IntRange
 }
 ```
 
-- #### Replace Data Value with Object
+- ### Replace Data Value with Object
 
 На начальных этапах разработки простые данные могут быть использованые в виде простых элементов. Например, телефон - строка. Позднее выяснится, что телефон может иметь код зоны или особое форматирование. В таких случаях необходимо преобразовать данные в объект.
 **Before**
@@ -625,7 +625,7 @@ private static int NumberOfOrdersFor(List<Order> orders, string customer)
 }
 ```
 
-- #### Replace Array with Object
+- ### Replace Array with Object
 
 Tckb ceotcndetn массив, некоторые элементы которого могут означать разные сущности.
 **Before**
@@ -686,7 +686,7 @@ public class Performance
 }
 ```
 
-- #### Change Unidirectional Association to Bidirectional
+- ### Change Unidirectional Association to Bidirectional
 
 Метод поможет решить проблему, когда есть два класса, каждый из которых должен использовать функции другого, но ссылка между ними есть только в одном направлении.
 
@@ -765,7 +765,7 @@ public class Customer
 }
 ```
 
-- #### Change Bidirectional Association to Unidirectional
+- ### Change Bidirectional Association to Unidirectional
 
 Двунаправленные связи удобны, но создают помехи в виде дополнительной сложности поддержки двусторонних ссылок и обеспечения корректности создания и удаления объектов. Сначала неободимо решить какой класс будет управляющим ("dominant").
 **Before**
@@ -871,7 +871,7 @@ public class Customer
 }
 ```
 
-- #### Encapsulate Field
+- ### Encapsulate Field
 Инкапсуляция - основа ООП. Инкапсуляция поля делает свойства объекта связанными только с поведением объекта и не позволяет сторонним классам изменять состояние объекта.
 **Before**
 
@@ -897,7 +897,7 @@ class Person
 }
 ```
 
-- #### Encapsulate Collection
+- ### Encapsulate Collection
 Метод получения не должен возвращать сам объект коллекции, потому что
 это позволило бы клиентам изменять содержимое коллекции без ведома владеющего ею класса. Не должно быть метода, присваивающего коллекции значение. Вместо этого должны быть операции для добавления и удаления элементов.
 **Before**
@@ -1014,7 +1014,7 @@ public class Person
 // Client code
 ```
 
-- #### Replace Magic Number with Symbolic Constant
+- ### Replace Magic Number with Symbolic Constant
 
 Используется для числовых значений имеющих смысл. Позволяет сделать код более очевидным.
 **Before**
@@ -1037,7 +1037,7 @@ double PotentialEnergy(double mass, double height)
 }
 ```
 
-- #### Replace Type Code with Class
+- ### Replace Type Code with Class
 
 Если заменить число классом, компилятор сможет проверять тип класса. Вероятность ошибок снижается, удобство использования кода и безопасность повышается
 **Before**
@@ -1131,7 +1131,7 @@ public class BloodGroup
 Person parent = new Person(BloodGroup.O);
 ```
 
-- #### Replace Type Code with Subclasses
+- ### Replace Type Code with Subclasses
 
 Если код типа влияет на поведение, то вариантное поведение лучше всего организовать с помощью полиморфизма. Код типа должен быть заменен иерархией наследования, содержащей полиморфное поведение. В такой иерархии наследования имеются подклассы для каждого кода типа
 **Before**
@@ -1245,7 +1245,7 @@ public class Manager : Employee
 }
 ```
 
-- #### Replace Type Code with State/Strategy
+- ### Replace Type Code with State/Strategy
 
 Этот метод аналогичен предыдщуему, но позволяет работать с объектами, у которых в течение жизни может изменится тип. Здесь применяется паттерн "Состояние/Стратегия"
 **Before**
@@ -1381,7 +1381,7 @@ public class Manager : EmployeeType
 }
 ```
 
-- #### Replace Subclass with Fields
+- ### Replace Subclass with Fields
 
 **Before**
 Есть подклассы, которые различаются только методами, возвращающими данные константы. Применение такого типа рефакторинга - это замена методов полями в родительском классе и удаление подкласов.
