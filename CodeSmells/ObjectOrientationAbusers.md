@@ -4,7 +4,7 @@
 a. [csharp-refactoring-object-orientation-abusers](https://code-maze.com/csharp-refactoring-object-orientation-abusers/)
 b. [Introduction to Object oriented Abusers](https://ducmanhphan.github.io/2020-01-24-Fixing-object-oriented-abusers/#alternative-classes-with-different-interfaces)
 
-- #### Switch Statements
+- ### Switch Statements
 Large, complicated code that does different things depending on the condition met is prone to bugs. Bad readability. The same applies to complicated if statements.
 
 **For example:**
@@ -79,7 +79,7 @@ public class CargoPlane : Plane
 
 We don’t have to modify any type of business logic in the Plain class but only add a new subclass.
 
-- #### Temporary Field
+- ### Temporary Field
 The code smell refers to a situation in which a class has a field or a bunch of fields that are only temporarily needed.
 
 **For example:**
@@ -136,7 +136,7 @@ public class BookstoreCustomer
 Now the BookstoreCustomer class no longer contains redundant fields, and local variables will be purged from memory when they are no longer needed.
 
 
-- #### Refused Bequest
+- ### Refused Bequest
 In the domain of object-oriented programming, a subclass can reject a bequest when it inherits fields and methods that it doesn’t require. Those rejected fields and methods are object-orientation abusers.
 
 **For example:**
@@ -208,7 +208,7 @@ public class Penguin : Animal
 ```
 
 
-- ####  Alternative Classes with Different Interfaces
+- ###  Alternative Classes with Different Interfaces
 This code smell arises when two classes are similar on the inside but distinct on the exterior. In other words, this implies that the code is similar or nearly the same but the method name or method signature is somewhat different.
 
 **For example:**

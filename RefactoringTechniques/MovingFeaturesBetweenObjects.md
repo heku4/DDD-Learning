@@ -1,6 +1,6 @@
 ## Moving Features between Objects (Extract Class, Inline Class, Hide Delegate, Remove Middle Man, Introduce Foreign Method, Introduce Local Extension)
 
-- #### Move Method
+- ### Move Method
 The "Move method" technique makes classes simplier and more organized.
 **Before:**
 
@@ -93,7 +93,7 @@ public class AccountType
 
 ```
 
-- #### Move Field
+- ### Move Field
 In case the field is used frequently in another class or will be used frequently.
 
 **Before:**
@@ -144,7 +144,7 @@ public class AccountType
 
 ```
 
-- #### Extract Class
+- ### Extract Class
 Sometimes a class works as two classes. Then we must separate them.
 
 **Before:**
@@ -242,7 +242,7 @@ class Person
  
 ```
 
-- #### Inline Class
+- ### Inline Class
 Sometimes a class does too little. This tecnique is opposite to the "Move Class".
 
 **Before:**
@@ -346,7 +346,7 @@ martin.setAreaCode ("781");
 
 ```
 
-- #### Hide Delegate
+- ### Hide Delegate
 
 **Before:**
 
@@ -416,7 +416,7 @@ manager = person.GetManager();
 
 ```
 
-- #### Remove Middle Man
+- ### Remove Middle Man
 Class does only delegation work. Client can make request to delegate class by itself. A lot of simple delegation methods will bloat the main class.
 
 **Before:**
@@ -467,7 +467,7 @@ var manager = person.GetDepartment().GetManager();
 
 ```
 
-- #### Introduce Foreign Method
+- ### Introduce Foreign Method
 It helps when you are trying to add new Method to a Class but this Class is closed for modification. 
 
 **Before:**
@@ -506,7 +506,7 @@ class Report
 
 ```
 
-- #### Introduce Local Extension
+- ### Introduce Local Extension
 The same as `Introduce Foreign Method` but used when you need move many methods to a Class which closed for modification.
 
 **Before:**

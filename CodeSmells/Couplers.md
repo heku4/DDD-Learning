@@ -2,7 +2,7 @@
 
 [code-smells.com/couplers/](https://code-smells.com/couplers/)
 
-- #### Feature Envy
+- ### Feature Envy
 Feature Envy occurs when a method is overly reliant on another class.
 
 **For example:**
@@ -90,7 +90,7 @@ class ContactInfo
     }
 ```
 
-- #### Inappropriate Intimacy
+- ### Inappropriate Intimacy
 Inappropriate Intimacy occurs when one class uses service fields and methods of another class.
 
 This is an indication that the classes should be merged, that some functionality belongs in a superclass of both original classes, or that the functionality belongs in an unrelated class.
@@ -107,7 +107,7 @@ This is an indication that the classes should be merged, that some functionality
 **For example:**
 
 
-- #### Message Chains
+- ### Message Chains
 Message Chains occur when a class (class A), in order to get some data from class D, must access class B and use it to access class C, and use class C to access class D (Law of Demeter).
 
 **For example:**
@@ -180,7 +180,7 @@ if(customer.IsInEurope())
 }
 ```
 
-- #### Middle Man
+- ### Middle Man
 A Middle Man is a class that in responsible, principally, for delegation.
 
 **For example:**
