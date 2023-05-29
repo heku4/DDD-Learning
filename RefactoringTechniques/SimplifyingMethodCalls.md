@@ -13,19 +13,74 @@
 Имя метода не раскрывает его назначения.
 
 - ### Separate Query from Modifier
-Есть метод, возвращающий значение, но, кроме того, изменяющий
-состояние объекта.
-Необходимо создать два метода – один для запроса и один для модификации
+Есть метод, возвращающий значение, но, кроме того, изменяющий состояние объекта.
+Необходимо создать два метода – один для запроса и один для модификации. Иначе, исходный метод будет создавать побочные эффекты.
 **Before**
 
 ```csharp
+public class Guard
+{
+    // ...
+    public void CheckSecurity(string[] people)
+    {
+        string found = FindCriminalAndAlert(people);
+        SomeLaterCode(found);
+    }
+    public string FindCriminalAndAlert(string[] people)
+    {
+        for (int i = 0; i < people.Length; i++)
+        {
+            if (people[i].Equals("Don")) {
+                SendAlert();
+                return "Don";
+            }
+            if (people[i].Equals("John")) {
+                SendAlert();
+                return "John";
+            }
+        }
+        return String.Empty;
+    }
+}
 
 ```
 
 **After**
 
 ```csharp
+public class Guard
+{
+    // ...
+    public void CheckSecurity(string[] people)
+    {
+        DoSendAlert(people);
+        string found = FindCriminal(people);
+        SomeLaterCode(found);
+    }
 
+    // Create new query method
+    public void DoSendAlert(string[] people)
+    {
+        if (!String.IsNullOrEmpty(FindCriminal(people))) {
+            SendAlert();
+        }
+    }
+
+    // 1. Create new modifier method and move inside it all modify logic
+    public string FindCriminal(string[] people)
+    {
+        for (int i = 0; i < people.Length; i++)
+        {
+            if (people[i].Equals ("Don")) {
+                return "Don";
+            }
+            if (people[i].Equals ("John")) {
+                return "John";
+            }
+        }
+        return String.Empty;
+    }
+}
 ```
 
 - ### Parameterize Method
@@ -372,56 +427,130 @@ public class Order
 
 - ### Hide Method
 
-**Before**
-
-```csharp
-
-```
-
-**After**
-
-```csharp
-
-```
+Если метод не используется дргуим классом, то его стоит скрыть.
 
 - ### Replace Constructor with Factory Method
 
+Применяется, если не достаточно функционала конструктора или нужно создавать множество наслежников.
 **Before**
 
 ```csharp
-
+public class Employee 
+{
+    public Employee(int type) 
+    {
+        this.type = type;
+    }
+    // ...
+}
 ```
 
 **After**
 
 ```csharp
-
+public class Employee
+{
+    public static Employee Create(int type)
+    {
+        employee = new Employee(type);
+        // ...
+        return employee;
+    }
+    // ...
+}
 ```
 
 - ### Replace Error Code with Exception
 
+Создание исключения чётче отображает логику программы и отделяют логику программы от логики ошибок ОС.
 **Before**
 
 ```csharp
-
+int Withdraw(int amount) 
+{
+    if (amount > _balance) 
+    {
+        return -1;
+    }
+    else 
+    {
+        _balance -= amount;
+        return 0;
+    }
+}
 ```
 
 **After**
 
 ```csharp
+///<exception cref="BalanceException">Thrown when amount > _balance</exception>
+void Withdraw(int amount)
+{
+    if (amount > _balance) 
+    {
+        throw new BalanceException();
+    }
 
+    _balance -= amount;
+}
 ```
 
 - ### Replace Exception with Test
 
+Если исключительную ситуацию можно проверить, то необходимо делать проверку, вместо создания исключения. 
 **Before**
 
 ```csharp
+public class ResourcePool
+{
+    // ...
+    private Stack available;
+    private Stack allocated;
 
+    public Resource GetResource()
+    {
+        Resource result;
+
+        try
+        {
+            result = (Resource) available.Pop();
+            allocated.Push(result);
+            return result;
+        }
+        catch (InvalidOperationException e)
+        {
+            result = new Resource();
+            allocated.Push(result);
+            return result;
+        }
+    }
+}
 ```
 
 **After**
 
 ```csharp
+public class ResourcePool
+{
+    // ...
+    private Stack available;
+    private Stack allocated;
 
+    public Resource GetResource()
+    {
+        Resource result;
+
+        if (available.Count == 0)
+        {
+            result = new Resource();
+        }
+        else
+        {
+            result = (Resource) available.Pop();
+        }
+
+        allocated.Push(result);
+        return result;
+    }
+}
 ```
