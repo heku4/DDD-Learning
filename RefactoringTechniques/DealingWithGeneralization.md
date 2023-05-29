@@ -362,30 +362,115 @@ public class Employee: IBillable
 
 - ### Collapse Hierarchy
 
-**Before:**
-
-```csharp
-
-```
-
-**After:**
-
-```csharp
-
-```
+Если родительский класс и подкласс не различаются - их стоит объединить в один класс.
 
 - ### Form Template Method
 
+Есть два метода в подклассах, выполняющие аналогичные шаги в одинаковом порядке, однако эти шаги различны. Нужно сделать из этих шагов методы с одинаковой сигнатурой, чтобы
+исходные методы стали одинаковыми. После этого можно их поднять в родительский класс.
+
+Два метода выполняют во многом аналогичные шаги в одинаковой последовательности, но эти шаги разные. В таком случае можно переместить последовательность шагов в
+родительский класс и позволить полиморфизму выполнить свою роль в обеспечении того, чтобы различные шаги выполняли свои действия по-разному.
 **Before:**
 
 ```csharp
+public class Article
+{
+    // ...
+    public string Title { get; set; }
+    public string Intro { get; set; }
+    public string Body { get; set; }
 
+    public string MarkdownView()
+    {
+        var output = new StringBuilder();
+        output.Append("# ").Append(Title).AppendLine().AppendLine();
+        output.Append("> ").Append(Intro).AppendLine().AppendLine();
+        output.Append(Body).AppendLine().AppendLine();
+        return output.ToString();
+    }
+    public string HtmlView()
+    {
+        var output = new StringBuilder();
+        output.Append("<h2>").Append(Title).Append("</h2>").AppendLine();
+        output.Append("<blockquote>").Append(Intro).Append("</blockquote>").AppendLine();
+        output.Append("<p>").Append(Body).Append("</p>").AppendLine();
+        return output.ToString();
+    }
+}
 ```
 
 **After:**
 
 ```csharp
+public class Article
+{
+    // ...
+    public string Title { get; set; }
+    public string Intro { get; set; }
+    public string Body { get; set; }
+    
+    public string MarkdownView()
+    {
+        return new ArticleMarkdown(this).View();
+    }
+    public string HtmlView()
+    {
+        return new ArticleHtml(this).View();
+    }
+}
 
+// 1.1 Use Replace Method With Method Object to create new class ArticleView
+public abstract class ArticleView
+{
+    protected Article article;
+
+    protected abstract string Title { get; }
+    protected abstract string Intro { get; }
+    protected abstract string Body { get; }
+
+    protected ArticleView(Article article)
+    {
+        this.article = article;
+    }
+
+    // 1.2 View method
+    public string View()
+    {
+        return Title + Intro + Body;
+    }
+}
+
+// 2.1 Extract a subclass from ArticleView
+public class ArticleMarkdown: ArticleView
+{
+    // 3.1 break the View method to properties
+    protected override string Title => "# " + article.Title + Environment.NewLine + Environment.NewLine;
+
+    protected override string Intro => "> " + article.Intro + Environment.NewLine + Environment.NewLine;
+
+    protected override string Body => article.Body + Environment.NewLine + Environment.NewLine;
+
+
+    public ArticleMarkdown(Article article): base(article)
+    {
+    }
+}
+
+// 2.2 Extract a subclass from ArticleView
+public class ArticleHtml: ArticleView
+{
+    // 3.2 break the View method to properties
+    protected override string Title => "<h2>" + article.Title + "</h2>" + Environment.NewLine;
+
+    protected override string Intro => "<blockquote>" + article.Intro + "</blockquote>" + Environment.NewLine;
+
+    protected override string Body => "<p>" + article.Body + "</p>" + Environment.NewLine;
+
+    public ArticleHtml(Article article): base(article)
+    {
+    }
+}
 ```
 
 - ###  Replace Inheritance with Delegation
