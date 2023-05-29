@@ -294,17 +294,70 @@ public class Department: Company
 ```
 
 - ### Extract Interface
-Несколько клиентов пользуются одним и тем же подмножеством интерфейса класса или в двух классах часть интерфейса является общей.
+
+Несколько клиентов пользуются одним и тем же подмножеством интерфейса класса или в двух классах часть интерфейса является общей. Несколько клиентов используют только определенное подмножество предоставляемых классом функций. Или класс должен работать с любым классом,который может обрабатывать определенные запросы. Полезно заставить подмножество
+обязанностей выступать от своего собственного имени, чтобы сделать отчетливым его использование в системе. Благодаря этому легче видеть, как разделяются обязанности в системе.
+
+Для C# такое возможно только с помощью выделения интерфейсов, так как в этом языке одиночное наследование.
 **Before:**
 
 ```csharp
+public class TimeSheet
+{
+    // ...
+    public double Charge(Employee employee, int days)
+    {
+        double baseAmount = employee.Rate * days;
 
+        return employee.HasSpecialSkill() ? baseAmount * 1.05 : baseAmount;
+    }
+}
+
+public class Employee
+{
+    // ...
+    public int Rate 
+    { get; private set; }
+    // ...
+    public bool HasSpecialSkill()
+    {
+        // ...
+    }
+}
 ```
 
 **After:**
 
 ```csharp
+public class TimeSheet
+{
+    // 2. Change type Employee to Interface IBillable
+    public double Charge(IBillable employee, int days)
+    {
+        double baseAmount = employee.Rate * days;
 
+        return employee.HasSpecialSkill() ? baseAmount * 1.05 : baseAmount;
+    }
+}
+
+// 1. Create an Interface for a subset of billing charactersitics
+public interface IBillable
+{
+    int Rate { get; }
+    bool HasSpecialSkill();
+}
+
+public class Employee: IBillable
+{
+    // ...
+    public int Rate 
+    { get; private set; }
+    // ...
+    public bool HasSpecialSkill()
+    {
+        // ...
+    }
+}
 ```
 
 - ### Collapse Hierarchy
