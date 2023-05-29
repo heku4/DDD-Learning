@@ -475,16 +475,53 @@ public class ArticleHtml: ArticleView
 
 - ###  Replace Inheritance with Delegation
 
+Применяя вместо наследования делегирование, мы открыто заявляем,что используем делегируемый класс лишь частично. Мы управляем тем, какую часть интерфейса взять, а какую – игнорировать.
 **Before:**
 
 ```csharp
+public class Engine
+{
+    //…
+    public double Fuel
+    { get; set; }
+    public double CV
+    { get; set; }
+}
 
+public class Car: Engine
+{
+    // ...
+    public string Brand    { get; set; }
+    public string Model    { get; set; }
+    public string Name => Brand + " " + Model + " (" + CV + "CV)";
+}
 ```
 
 **After:**
 
 ```csharp
+public class Engine
+{
+    //…
+    public double Fuel    { get; set; }
+    public double CV      { get; set; }
+}
 
+//2. Remove Inheritance
+public class Car
+{
+    // 1. Create filed with Base Class
+    protected Engine _engine;
+
+    public string Brand { get; set; }
+    public string Model { get; set; }
+    public string Name => Brand + " " + Model + " (" + _engine.CV + "CV)";
+
+    public Car()
+    {
+        _engine = new Engine();
+    }
+}   
 ```
 
 - ### Replace Delegation with Inheritance
