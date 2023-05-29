@@ -1,45 +1,41 @@
 ## Dealing with Generalization
 
 - ### Pull Up Field
-
-**Before:**
-
-```csharp
-
-```
-
-**After:**
-
-```csharp
-
-```
+Если в двух классах есть одинаковое поле, то их стоит переместить в родительский класс.
 
 - ### Pull Up Method
 
-**Before:**
-
-```csharp
-
-```
-
-**After:**
-
-```csharp
-
-```
+Если в двух классах есть методы с идентичными результатами, то их стоит переместить в родительский класс.
 
 - ### Pull Up Constructor Body
 
+Если имеются конструкторы подклассов с почти идентичными телами, то стоит вызывать родительский конструктор из подклассов.
 **Before:**
 
 ```csharp
-
+public class Manager: Employee 
+{
+    public Manager(string name, string id, int grade) 
+    {
+        this.name = name;
+        this.id = id;
+        this.grade = grade;
+    }
+    // ...
+}
 ```
 
 **After:**
 
 ```csharp
-
+public class Manager: Employee 
+{
+    public Manager(string name, string id, int grade): base(name, id)
+    {
+        this.grade = grade;
+    }
+    // ...
+}
 ```
 
 - ### Push Down Field
