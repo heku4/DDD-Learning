@@ -1,6 +1,6 @@
 ## Composing Methods 
 
-- #### Extract Method
+- ### Extract Method
 Transofrming a code fragment to a method which name explains the purpose.
 
 **Before:**
@@ -36,7 +36,7 @@ void PrintDetails (double amount)
 ```
 
 
-- #### Inline Method
+- ### Inline Method
 Move method's body to a calling code and remove the method.
 
 **Before:**
@@ -66,7 +66,7 @@ int GetRating()
 ```
 
 
-- #### Extract Variable
+- ### Extract Variable
 Expressions can become very complex and hard to read.
 
 **Before:**
@@ -92,7 +92,7 @@ return basePrice - quantityDiscount + shipping;
 ```
 
 
-- #### Inline Temp
+- ### Inline Temp
 In most of cases an Inline Temp uses with Replace Temp with Query.
 
 **Before:**
@@ -112,7 +112,7 @@ return (order.GetBasePrice() > 1000)
 ```
 
 
-- #### Replace Temp with Query
+- ### Replace Temp with Query
 Local variables often bloat methods also they make using of `Extract Method` difficult. 
 Еurning variables into their own functions makes breaking up a large function easier to extract parts of the function
 
@@ -165,7 +165,7 @@ double BasePrice()
 ```
 
 
-- #### Split Temporary Variable
+- ### Split Temporary Variable
 Every temp variable must be used for separated methods.
 
 **Before:**
@@ -223,7 +223,7 @@ double GetDistanceTravelled (int time)
 ```
 
 
-- #### Remove Assignments to Parameters
+- ### Remove Assignments to Parameters
 Improves code readability and safety.
 
 **Before:**
@@ -258,7 +258,7 @@ int Discount (int inputVal, int quantity, int yearToDate)
 ```
 
 
-- #### Replace Method with Method Object
+- ### Replace Method with Method Object
 If a big banch of local variables don't give you a chance to extract method than create object with private fields instead of these local variables.
 
 **Before:**
@@ -343,7 +343,7 @@ public class SomethingCalculator()
 
 ```
 
-- #### Substitute Algorithm
+- ### Substitute Algorithm
 If I find a clearer way to do something, I replace the complicated way with the clearer way.
 
 **Before:**

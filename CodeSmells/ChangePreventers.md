@@ -2,7 +2,7 @@
 
 [how-to-solve-parallel-inheritance-hierarchies-when-we-try-to-reuse-code-through](https://stackoverflow.com/questions/71242936/how-to-solve-parallel-inheritance-hierarchies-when-we-try-to-reuse-code-through)
 
-- #### Divergent Change
+- ### Divergent Change
 
 Divergent Change is when adding a simple feature makes the developer change many unrelated methods inside a class.
 
@@ -93,7 +93,7 @@ public class CommunicationFailureValidator
 }
 ```
 
-- #### Shotgun Surgery
+- ### Shotgun Surgery
 Shotgun Surgery refers to when a single change is made to multiple classes simultaneously.
 
 **For example:**
@@ -267,7 +267,7 @@ public class PgDeviceOperations
 } 
 ```
 
-- #### Parallel Inheritance Hierarchies
+- ### Parallel Inheritance Hierarchies
 
 Whenever you create a subclass for a class, you find yourself needing to create a subclass for another class.
 
