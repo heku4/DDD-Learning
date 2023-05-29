@@ -529,11 +529,48 @@ public class Car
 **Before:**
 
 ```csharp
+public class Person
+{
+    public string Name { get; set; }
+    public string LastName => Name.Substring(Name.LastIndexOf(' ') + 1);
+}
 
+public class Employee
+{
+    protected Person person;
+
+    public string Name
+    {
+        get{ return person.Name; }
+        set{ person.Name = value; }
+    }
+
+    public Employee()
+    {
+        person = new Person();
+    }
+
+    public override string ToString()
+    {
+        return "Emp: " + person.LastName;
+    }
+}
 ```
 
 **After:**
 
 ```csharp
+public class Person
+{
+    public string Name { get; set; }
+    public string LastName => Name.Substring(Name.LastIndexOf(' ') + 1);
+}
 
+public class Employee: Person
+{
+    public override string ToString()
+    {
+        return "Emp: " + LastName;
+    }
+}
 ```
